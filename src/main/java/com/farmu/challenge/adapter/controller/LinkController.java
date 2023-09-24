@@ -3,6 +3,7 @@ package com.farmu.challenge.adapter.controller;
 import com.farmu.challenge.adapter.controller.model.LinkRequest;
 import com.farmu.challenge.application.ShortenLinkUseCase;
 import com.farmu.challenge.application.UnshortenLinkUseCase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +30,7 @@ public class LinkController {
     private final UnshortenLinkUseCase unshortenLink;
 
     @PostMapping(path = "/shorten")
-    public String shorten(@RequestBody LinkRequest request) {
+    public String shorten(@RequestBody @Valid LinkRequest request) {
         String serverPath = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         log.info(">> execute controller to shorten url: {}", request.link());
         var response = shortenLink.execute(serverPath, request);

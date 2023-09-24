@@ -1,13 +1,14 @@
 package com.farmu.challenge.application;
 
 import com.farmu.challenge.adapter.persistance.LinkRepository;
+import com.farmu.challenge.application.exception.LinkNotFoundException;
+import com.farmu.challenge.config.ErrorCode;
 import com.farmu.challenge.domain.Link;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Component;
 
-import java.util.NoSuchElementException;
 
 @Component
 @Slf4j
@@ -16,10 +17,16 @@ public class UnshortenLinkUseCase {
     private final LinkRepository linkRepository;
 
     public String execute(String shortlink) {
-        var id = new String(Base64.decodeBase64(shortlink));
-        log.info("id: {}", id);
-        return linkRepository.findById(Long.parseLong(id))
+        return linkRepository.findById(extractId(shortlink))
                 .map(Link::getLongLink)
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new LinkNotFoundException(ErrorCode.LINK_NOT_FOUND));
+    }
+
+    private long extractId(String shortLink) {
+        try {
+            return Long.parseLong(new String(Base64.decodeBase64(shortLink)));
+        } catch (NumberFormatException e) {
+            throw new LinkNotFoundException(ErrorCode.LINK_NOT_FOUND);
+        }
     }
 }
