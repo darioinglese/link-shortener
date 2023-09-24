@@ -3,6 +3,7 @@ package com.farmu.challenge.adapter.controller;
 import com.farmu.challenge.adapter.controller.model.ImageRequest;
 import com.farmu.challenge.adapter.controller.model.ImageResponse;
 import com.farmu.challenge.application.ResizeUseCase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class ImageController {
     private final ResizeUseCase resizeUseCase;
 
     @PostMapping(path = "/resize")
-    public ImageResponse shorten(@RequestBody ImageRequest request) {
+    public ImageResponse shorten(@RequestBody @Valid ImageRequest request) {
         log.info(">> execute controller to resize image to: {}, {}", request.x(), request.y());
         var response = resizeUseCase.execute(request);
         log.info("<< controller execution completed");

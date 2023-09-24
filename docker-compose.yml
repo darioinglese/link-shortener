@@ -4,6 +4,7 @@ services:
     image: 'postgres:15.2-alpine'
     container_name: farmu_db
     volumes:
+      - ./docker:/docker-entrypoint-initdb.d
       - /var/lib/postgresql/data
     ports:
       - "54320:5432"
@@ -11,3 +12,16 @@ services:
       - POSTGRES_DB=db_farmu
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
+  app:
+    image: 'darioinglese/daro-challenge:0.0.1'
+    build:
+      context: .
+    container_name: app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/db_farmu
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root

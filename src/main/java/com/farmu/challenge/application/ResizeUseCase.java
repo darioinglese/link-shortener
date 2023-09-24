@@ -26,6 +26,7 @@ public class ResizeUseCase {
 
     public String execute(ImageRequest request) {
         String[] parts = request.image().split(",");
+        if(parts.length != 2) throw new ImageProcessingException(ErrorCode.IMAGE_DECODING_EXCEPTION);
         String mimetype = parts[0];
         String extension = mimetype.substring(mimetype.indexOf('/') + 1, mimetype.indexOf(';'));
         byte[] bytes;
@@ -42,8 +43,9 @@ public class ResizeUseCase {
             throw new ImageProcessingException(ErrorCode.IMAGE_PROCESSING_EXCEPTION);
         }
         log.info(">> saving image to db");
-        imageRepository.save(Img.builder().original(request.image()).resized(result).build());
-        return mimetype.concat(",").concat(result);
+        var response = mimetype.concat(",").concat(result);
+        imageRepository.save(Img.builder().original(request.image()).resized(response).build());
+        return response;
     }
 
     private String resize(byte[] bytes, int x, int y, String extension) throws IOException {
