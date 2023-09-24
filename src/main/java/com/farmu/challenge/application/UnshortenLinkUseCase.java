@@ -25,7 +25,7 @@ public class UnshortenLinkUseCase {
     private long extractId(String shortLink) {
         try {
             return Long.parseLong(new String(Base64.decodeBase64(shortLink)));
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             throw new LinkNotFoundException(ErrorCode.LINK_NOT_FOUND);
         }
     }

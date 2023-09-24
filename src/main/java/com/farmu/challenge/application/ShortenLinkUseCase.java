@@ -18,13 +18,14 @@ public class ShortenLinkUseCase {
 
     public String execute(String basePath, LinkRequest request) {
         var link = linkRepository.findByLongLink(request.link())
-                .orElse(createLink(request.link()));
+                .orElseGet(() -> createLink(request.link()));
         return basePath.concat("/").concat(link.getShortLink());
     }
     private Link createLink(String longLink) {
         Link link = linkRepository.save(
                 Link.builder().longLink(longLink).build());
         link.setShortLink(shorten(link.getId()));
+        log.info(">> saving url {} in db", link.getLongLink());
         return linkRepository.save(link);
     }
     private String shorten(Long id) {
